@@ -1,0 +1,46 @@
+name: native-image/provenance
+on:
+  push:
+    paths:
+      - 'native-image/provenance/**'
+      - '.github/workflows/native-image-provenance.yml'
+  pull_request:
+    paths:
+      - 'native-image/provenance/**'
+      - '.github/workflows/native-image-provenance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+jobs:
+  run:
+    name: Run 'native-image/provenance'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '25-ea'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+      - name: Build and run app
+        run: |
+          cd native-image/provenance
+          ./run.sh
+      - name: Upload native image
+        uses: actions/upload-artifact@v4
+        with:
+          name: app
+          path: native-image/provenance/target/app
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: 'native-image/provenance/target/app'
+      - name: Generate SBOM attestation
+        uses: actions/attest-sbom@v2
+        with:
+          subject-path: 'native-image/provenance/target/app'
+          sbom-path: 'native-image/provenance/target/app.sbom.json'
