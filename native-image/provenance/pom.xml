@@ -46,7 +46,7 @@
                             <mainClass>com.oracle.ProvenanceTestApplication</mainClass>
                             <imageName>app</imageName>
                             <buildArgs>
-                                <buildArg>--enable-sbom=embed,export</buildArg>
+                                <buildArg>--enable-sbom=embed,export,hashes</buildArg>
                                 <buildArg>-Ob</buildArg>
                             </buildArgs>
                         </configuration>
